@@ -1,0 +1,27 @@
+OrdererOrgs:
+  - Name: Orderer
+    Domain: actchain.com
+    Specs:
+      - Hostname: orderer
+PeerOrgs:
+  - Name: manu
+    Domain: manu.actchain.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+    Users:
+      Count: 1
+  - Name: dealer
+    Domain: dealer.actchain.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+    Users:
+      Count: 1
+  - Name: customer
+    Domain: customer.actchain.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+    Users:
+      Count: 1

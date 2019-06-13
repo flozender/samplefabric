@@ -1,0 +1,147 @@
+Organizations:
+
+    - &OrdererOrg
+        Name: OrdererOrg
+
+        ID: OrdererMSP
+
+        MSPDir: crypto-config/ordererOrganizations/actchain.com/msp
+
+        AdminPrincipal: Role.MEMBER
+
+    - &manu
+       
+        Name: manu
+
+        ID: manuMSP
+
+        MSPDir: crypto-config/peerOrganizations/manu.actchain.com/msp
+
+        AnchorPeers:
+            
+            - Host: peer0.manu.actchain.com
+              Port: 7051
+
+    - &dealer
+       
+        Name: dealer
+
+        ID: dealerMSP
+
+        MSPDir: crypto-config/peerOrganizations/dealer.actchain.com/msp
+
+        AnchorPeers:
+            
+            - Host: peer0.dealer.actchain.com
+              Port: 7051
+
+    - &customer
+       
+        Name: customer
+
+        ID: customerMSP
+
+        MSPDir: crypto-config/peerOrganizations/customer.actchain.com/msp
+
+        AnchorPeers:
+            
+            - Host: peer0.customer.actchain.com
+              Port: 7051
+
+Orderer: &OrdererDefaults
+
+    
+    OrdererType: kafka
+
+    Addresses:
+        - orderer.actchain.com:7050
+
+    BatchTimeout: 2s
+
+    BatchSize:
+
+        MaxMessageCount: 10
+        AbsoluteMaxBytes: 99 MB
+        PreferredMaxBytes: 512 KB
+
+    Kafka:
+        Brokers:
+            - kafka0:9092
+            - kafka1:9092
+            - kafka2:9092
+            - kafka3:9092
+
+    Organizations:
+
+Capabilities:
+
+    Channel: &ChannelCapabilities
+        V1_4: true
+
+    Application: &ApplicationCapabilities
+        V1_4: true
+        V1_3: false
+        V1_2: false
+        V1_1: false
+
+Channel: &ChannelDefaults
+
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+
+    Capabilities:
+        <<: *ChannelCapabilities
+
+Application: &ApplicationDefaults
+
+    Organizations:
+
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+
+    Capabilities:
+        <<: *ApplicationCapabilities
+
+Profiles:
+
+    ProfileTest:
+        Capabilities:
+            <<: *ChannelCapabilities
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *OrdererOrg
+        Consortiums:
+            ActChainConsortium:
+                Organizations:
+                    - *manu
+                    - *dealer
+                    - *customer
+    PubChannel:
+        Consortium: ActChainConsortium
+        <<: *ChannelDefaults
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *manu
+                - *dealer
+                - *customer
+            Capabilities:
+                <<: *ApplicationCapabilities
